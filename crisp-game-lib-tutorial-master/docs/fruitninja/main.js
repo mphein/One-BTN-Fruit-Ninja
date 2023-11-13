@@ -7,6 +7,7 @@ description = `
 const G = {
 	WIDTH: 150,
 	HEIGHT: 75,
+	FRUITSPAWN: 175
 }
 
 const BAR = {
@@ -32,7 +33,15 @@ rrrrr
 rrrrr
 rrrrr
  rrr
+`,
 `
+     l
+    l
+   l
+  l
+ l
+l
+`,
 ];
 
 // JSDoc comments for typing
@@ -48,6 +57,15 @@ rrrrr
  * @type { Ninja }
  */
 let player;
+
+/**
+ * @typedef {{
+* pos: Vector,
+* duration: number
+* }} Sword
+*/
+
+let sword
 
 
 /**
@@ -91,22 +109,27 @@ options = {
 function update() {
 	if (!ticks) {
 		player = {
-      		pos: vec(5, spawnPT),
-			isSwinging: false,
+      pos: vec(5, spawnPT),
+			isSwinging: true,
 			combo: 0
 		}
 
-		fruits = times(1, () => {
+		sword = {
+			pos: vec(12, spawnPT),
+			duration: 0
+		}
+
+		fruits = times(3, () => {
 			// Random number generator function
 			// rnd( min, max )
-			const posX = G.WIDTH
+			const posX = rnd(G.WIDTH, G.WIDTH * 2)
 			const posY = spawnPT
 			// An object of type Star with appropriate properties
 			return {
 				// Creates a Vector
 					pos: vec(posX, posY),
-					// More RNG
-					speed: 1
+					// variable movespeed
+					speed: rnd(.2, 1)
 			};
 		});
 
@@ -115,24 +138,71 @@ function update() {
 			width: G.WIDTH,
 			height: 8
 		}
-		console.log(indicatorBar.pos)
-	}
 
+		hotZone = {
+			pos: vec(G.WIDTH / 2, G.HEIGHT / 4),
+			width: G.WIDTH / 8,
+			height: 8
+		}
+
+		safeZone = {
+			pos: vec(G.WIDTH / 2, G.HEIGHT / 4),
+			width: G.WIDTH / 2,
+			height: 8
+		}
+
+		scroller = {
+			pos: vec(1, G.HEIGHT / 4),
+			speed: 2,
+      width: 2,
+      height: 8
+		}
+		
+	}
+	// ninja graphics
 	color("black")
 	char("a", player.pos);
+
+
+	char("c", sword.pos)
+
+	// fruit update 
 	fruits.forEach((f) => {
 		f.pos.x -= f.speed
 		char("b", f.pos)
-		f.pos.wrap(0, G.WIDTH, spawnPT, 0)
+
+		if (f.pos.x > sword.pos.x -3 && f.pos.x < sword.pos.x + 3 && player.isSwinging) {
+			f.pos.x = G.FRUITSPAWN
+		}
 	})
+	
+	//ground visual
 	color("yellow")
 	box(0, G.HEIGHT, G.WIDTH * 2, 5)
 
-	console.log(indicatorBar.pos.x)
+	// full bar
 	color("red")
 	box(indicatorBar.pos.x, indicatorBar.pos.y, indicatorBar.width, indicatorBar.height)
 	
+	// bar safe zone
+	color("green")
+	box(safeZone.pos.x, safeZone.pos.y, safeZone.width, safeZone.height)
 
+	// bar hot zone
+	color("blue")
+	box(hotZone.pos.x, hotZone.pos.y, hotZone.width, hotZone.height)
 
+	// scroller movement and visual
+	color("black")
+	box(scroller.pos.x, scroller.pos.y, scroller.width, scroller.height)
+  
+	scroller.pos.x += scroller.speed 
+	if (scroller.pos.x >= G.WIDTH) {
+		scroller.speed *= -1
+	}
+
+	if (scroller.pos.x <= 0) {
+		scroller.speed *= -1
+	}
 	
 }
