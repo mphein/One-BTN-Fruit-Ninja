@@ -106,7 +106,9 @@ let scroller
 
 options = {
 	viewSize: {x: G.WIDTH, y: G.HEIGHT},
-	theme: "pixel"
+	theme: "pixel",
+	seed: 101,
+	isPlayingBgm: true
 };
 
 function update() {
@@ -197,8 +199,9 @@ function update() {
 	if (input.isJustPressed && (!player.isSwinging || sword.duration > 10)) {
 		if (scroller.pos.x < safeZone.pos.x + safeZone.width/2 && scroller.pos.x > safeZone.pos.x - safeZone.width/2) {
 			player.isSwinging = true
-			if (scroller.pos.x < hotZone.pos.x + hotZone.width && scroller.pos.x > hotZone.pos.x - hotZone.width) {
+			if (scroller.pos.x < hotZone.pos.x + hotZone.width/2 && scroller.pos.x > hotZone.pos.x - hotZone.width/2) {
 				player.combo += 1
+				play("coin");
 			}
 		}
 	}
@@ -222,17 +225,18 @@ function update() {
 	})
 
 	// check for 3 perfect combo
-	console.log(player.combo)
+	
 	if (player.combo == 3) {
+		play("laser");
 		player.combo = 0
 		// do slash giant white flash or something and all fruits reset
 		color("black")
-		box(scroller.pos.x, spawnPT, G.WIDTH, 3)
+		box(G.WIDTH/2, spawnPT, G.WIDTH, 3)
 		score += 5
 
-	fruits.forEach((f) => {
-			f.pos.x = G.FRUITSPAWN
-	})
+		fruits.forEach((f) => {
+				f.pos.x = G.FRUITSPAWN
+		})
 	}
 	
 	//ground visual
