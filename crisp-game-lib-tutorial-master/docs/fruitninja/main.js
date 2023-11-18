@@ -50,6 +50,7 @@ l
 * pos: Vector,
 * isSwinging: boolean
 * combo: number,
+* lives: number
 * }} Ninja
 */
 
@@ -60,7 +61,8 @@ let player;
 
 /**
  * @typedef {{
-* pos: Vector,
+* posOn: Vector,
+* posOff: Vector,
 * duration: number
 * }} Sword
 */
@@ -110,16 +112,18 @@ function update() {
 	if (!ticks) {
 		player = {
       pos: vec(5, spawnPT),
-			isSwinging: true,
-			combo: 0
+			isSwinging: false,
+			combo: 0,
+			lives: 3
 		}
 
 		sword = {
-			pos: vec(12, spawnPT),
+			posOn: vec(12, spawnPT),
+			posOff: vec(-10, spawnPT),
 			duration: 0
 		}
 
-		fruits = times(3, () => {
+		fruits = times(5, () => {
 			// Random number generator function
 			// rnd( min, max )
 			const posX = rnd(G.WIDTH, G.WIDTH * 2)
@@ -129,10 +133,11 @@ function update() {
 				// Creates a Vector
 					pos: vec(posX, posY),
 					// variable movespeed
-					speed: rnd(.2, 1)
+					speed: rnd(.2, .5)
 			};
 		});
-
+		
+		// top bars
 		indicatorBar = {
 			pos: vec(G.WIDTH / 2, G.HEIGHT / 4),
 			width: G.WIDTH,
@@ -159,22 +164,74 @@ function update() {
 		}
 		
 	}
+
+	// increase difficulty every 10 seconds
+	if (ticks % 600 == 0 && ticks > 10) {
+		scroller.speed *= 1.25
+
+		fruits.forEach((f) => {
+			f.speed *= 1.25
+		})
+
+		safeZone.width *= .75
+		hotZone.width *= .75 
+
+	}
+
+	if (player.isSwinging) {
+		sword.duration += 1
+		char("c", sword.posOn)
+		if (sword.duration > 60) {
+			sword.duration = 0
+			player.isSwinging = false
+		}
+	}
 	// ninja graphics
+	// console.log(player.isSwinging)
 	color("black")
 	char("a", player.pos);
 
+	// check for input and which zone
+	if (input.isJustPressed && (!player.isSwinging || sword.duration > 20)) {
+		if (scroller.pos.x < safeZone.pos.x + safeZone.width/2 && scroller.pos.x > safeZone.pos.x - safeZone.width/2) {
+			player.isSwinging = true
+			if (scroller.pos.x < hotZone.pos.x + hotZone.width && scroller.pos.x > hotZone.pos.x - hotZone.width) {
+				player.combo += 1
+			}
+		}
+	}
 
-	char("c", sword.pos)
+	
 
+	
 	// fruit update 
 	fruits.forEach((f) => {
 		f.pos.x -= f.speed
 		char("b", f.pos)
 
-		if (f.pos.x > sword.pos.x -3 && f.pos.x < sword.pos.x + 3 && player.isSwinging) {
+		if (f.pos.x > sword.posOn.x -3 && f.pos.x < sword.posOn.x + 3 && player.isSwinging) {
+			score++
 			f.pos.x = G.FRUITSPAWN
 		}
+
+		if (f.pos.x <0) {
+			end()
+		}
 	})
+
+	// check for 3 perfect combo
+	console.log(player.combo)
+	if (player.combo == 3) {
+		player.combo = 0
+		// do slash giant white flash or something and all fruits reset
+		color("black")
+		box(scroller.pos.x, spawnPT, G.WIDTH, 3)
+		score += 5
+
+	fruits.forEach((f) => {
+			f.pos.x = G.FRUITSPAWN
+	})
+	}
 	
 	//ground visual
 	color("yellow")
