@@ -1,7 +1,7 @@
 title = "ONE BTN FRUIT NINJA";
 
 
-description = `
+description = `Aim for the perfect combo.
 `;
 
 const G = {
