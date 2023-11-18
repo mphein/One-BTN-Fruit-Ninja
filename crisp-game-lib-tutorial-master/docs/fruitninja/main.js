@@ -1,7 +1,8 @@
 title = "ONE BTN FRUIT NINJA";
 
 
-description = `Aim for the perfect combo.
+description = `Aim for the 
+perfect combo.
 `;
 
 const G = {
@@ -178,6 +179,7 @@ function update() {
 
 	}
 
+	// if swinging start counting to limit swinging
 	if (player.isSwinging) {
 		sword.duration += 1
 		char("c", sword.posOn)
@@ -186,13 +188,13 @@ function update() {
 			player.isSwinging = false
 		}
 	}
+
 	// ninja graphics
-	// console.log(player.isSwinging)
 	color("black")
 	char("a", player.pos);
 
 	// check for input and which zone
-	if (input.isJustPressed && (!player.isSwinging || sword.duration > 20)) {
+	if (input.isJustPressed && (!player.isSwinging || sword.duration > 10)) {
 		if (scroller.pos.x < safeZone.pos.x + safeZone.width/2 && scroller.pos.x > safeZone.pos.x - safeZone.width/2) {
 			player.isSwinging = true
 			if (scroller.pos.x < hotZone.pos.x + hotZone.width && scroller.pos.x > hotZone.pos.x - hotZone.width) {
