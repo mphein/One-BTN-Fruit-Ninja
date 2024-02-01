@@ -3,6 +3,8 @@ title = "ONE BTN FRUIT NINJA";
 
 description = `Aim for the 
 perfect combo.
+Press any BTN
+to activate.
 `;
 
 const G = {
