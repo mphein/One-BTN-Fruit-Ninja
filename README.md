@@ -6,4 +6,5 @@ Fruit ninja game located in docs/FruitNinja. Used typdef for custom object types
 Additional tutorial on CrispGameLib located in crispgamelib/README file.
 
 Challenges: Creating minimalistic sprites. Designing gameplay that is enjoyable and playable with only one input. Designing a game which the player can improve at and feel that there is some skill involved.
+
 Learned: How to prototype and design a single input game with depth and room for skill expression. How to create a web game using CrispGameLib game library in JavaScript.
